@@ -90,7 +90,7 @@ o. y                     NB. y * pi
 n o. y                   NB. trigonometric and other functions determined by n applied on y
 q: y                     NB. prime factors of y
 x q: y                   NB. list of exponents in order of primes in length x [_ for full list]
-p: y                     NB. list of (y-1)'th prime
+p: y                     NB. get (y-1)'th prime
 x p: y                   NB. various prime related functions [function determined by x]
 y p. x                   =   +/ y * x ^ i. # y  NB. calculate polynomial specified by coefficients y on x
 (m, roots) p. x          =   m * */(x - roots)  NB. calculate coefficients
@@ -379,7 +379,7 @@ NB.   that are local to the script
 NB. - verbs using other verbs that are local to the script should 
 NB.   fix calls (f.)
 jpath '~user'            NB. user dir
-load 'f.ijs'	       NB. load 'f.ijs', stop on error, no display
+load 'f.ijs'             NB. load 'f.ijs', stop on error, no display
 loadd 'f.ijs'            NB. load 'f.ijs', stop on error, display
 require 'f.ijs'          NB. load 'f.ijs' only if not loaded already
 0!:0 < 'f.ijs'           NB. low level load 'f.ijs', stop on error, no display
