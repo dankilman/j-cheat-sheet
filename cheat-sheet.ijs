@@ -89,7 +89,7 @@ x ? y                    NB. randomly select x integers in range [0, y-1]
 o. y                     NB. y * pi
 n o. y                   NB. trigonometric and other functions determined by n applied on y
 q: y                     NB. prime factors of y
-x q: y                   NB. list of exponents in order of primes in length x [_ for full list]
+x q: y                   NB. list of x first exponents of y prime factors [_ for full list]
 p: y                     NB. get (y-1)'th prime
 x p: y                   NB. various prime related functions [function determined by x]
 y p. x                   =   +/ y * x ^ i. # y  NB. calculate polynomial specified by coefficients y on x
@@ -311,6 +311,7 @@ datatype y               NB. get data type of variable named 'name'
 s: y                     NB. convert a boxed string y into a symbol
 ". y                     NB. execute y as a J expression
 7!:5 <'name'             NB. sizeof variable named 'name'
+x I. y                   NB. index of y in intervals defined by x spec
 
 NB. ---------------------------------------------------------
 NB. Representation
@@ -429,7 +430,8 @@ fexist 'path'            NB. true if 'path' exists
 ferase 'path'            NB. delete file at 'path'
 x 1!:2 <'file.path'      NB. low level write x into 'file.path'
 1!:1 <'file.path'        NB. low level read 'file.path' as string
-x (1!:2) 2               NB. write to stdout
+smoutput y               NB. write to stdout
+x (1!:2) 2               NB. write to stdout [low level]
 (1!:1) 1                 NB. read from stdin
 
 NB. ---------------------------------------------------------
