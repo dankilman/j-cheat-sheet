@@ -1,8 +1,8 @@
 NB. ---------------------------------------------------------
 NB. Assignment
 NB. ---------------------------------------------------------
-x=: y                    NB. global assign y to x
-x=. y                    NB. local assign y to x
+x=: y                    NB. global assign value of y to x
+x=. y                    NB. local assign value of y to x
 'a b c'=: n m w          NB. [a =: n, b =: m, c =: w]
 ('a';'b';'c')=: n m w    NB. "
 'a b c'=: n;m;w          NB. "
@@ -16,33 +16,33 @@ x +. y                   NB. x or y
 -. y                     NB. not y
 x *: y                   NB. not (x and y)
 x +: y                   NB. not (x or y)
-x -: y                   NB. x matches y (same shape and values)
-x = y                    NB. x equals y (must have same shape)
+x -: y                   NB. x matches y (same shape and values: indentical, atomic result)
+x = y                    NB. x equals y (same shape collection of item comparisons)
 x >: y                   NB. x >= y
 x <: y                   NB. x <= y
 
 NB. ---------------------------------------------------------
 NB. Number representation
 NB. ---------------------------------------------------------
-Yx                       NB. Y variable, literal x. extended integer (bigint)
-XeY                      NB. scientific notation [X*10^Y]
-XrY                      NB. rational number [n=X, d=Y] [both numbers are stored as extended integers]
+Yx                       NB. Y number, literal x: extended integer (bigint)
+XeY                      NB. X number, literal e, Y pos/neg integer: scientific notation [X*10^Y]
+XrY                      NB. rational number [X / Y: both components are stored as extended integers]
 XjY                      NB. complex number [real=X, imag=Y]
 XarY                     NB. complex number [magnitude=x, angle-rad=y]
 XadY                     NB. complex number [magnitude=x, angle-deg=y]
 XpY                      NB. X * pi^Y
 XxY                      NB. X * e^Y
-NbDDD.DDD                NB. [N=number base, DDD.DDD=digits] [a-z chars used for "digits" > 9]
+NbDDD.DDD                NB. [N=number base, DDD.DDD=digits; a-z chars used for "digits" > 9]
 
 NB. ---------------------------------------------------------
-NB. Math
+NB. Numerical Math
 NB. ---------------------------------------------------------
 _                        NB. infinity [float]
 __                       NB. negative infinity [float]
 _.                       NB. NaN [float]
 | y                      NB. abs(y) [magnitude]
 x | y                    NB. y modulo x
-Xx % Yx                  =   XrY  NB. literal x
+Xx % Yx                  =   XrY  NB. literal x and r
 x: y                     NB. rational number from float y
 x:^:_1 y                 NB. float from rational number
 (2 x: XrY)               =   X Y
@@ -52,11 +52,11 @@ x r. y                   NB. complex number [magnitude=x, angle-rad=y]
 *. XjY                   =   (| x) 'ANGLE-RAD'
 (128 !: 5) y             NB. is y _. (NaN)
 x + y                    NB. add
-+ XjY                    =   Xj_Y
-x - y                    NB. minus
++ XjY                    =   Xj_Y  NB. conjugate
+x - y                    NB. subtract
 - y                      NB. negate
 x * y                    NB. multiply
-* y                      NB. sign of y [also for complex]
+* y                      NB. sign of y [unit angle vector for complex]
 *: y                     =   y * y
 x % y                    NB. divide [1%0=_, 0%0=0]
 % y                      =   1 % y
@@ -111,7 +111,7 @@ u . v                    =   (u @: v) " (1+L, _)  NB. L = 1 { (v b. 0) [left ran
 (- / . *) M              NB. determinant of matrix M
 R %. M                   NB. find solutions U [M is a matrix, R is right hand size values] (M dot U = R)
 M %. M                   NB. Identity matrix `I` such that [M dot I = M]
-%. M                     NB. Inverse matrix [= I %. M where I is the identity matrix of M]
+%. M                     NB. Inverse matrix [= I %. M where I is the identity matrix of the size of M]
 
 NB. ---------------------------------------------------------
 NB. Arrays
@@ -120,18 +120,18 @@ x $ y                    NB. build table with shape x with values y
 # y                      NB. len(y)
 |. y                     NB. reverse y
 x |. y                   NB. rotate y by x places [positive rotate to left, negative vice-versa]
-NB.                          successive number in x to rotate succesive axes
+NB.                          successive items in x rotate succesive axes
 x (|. !. n) y            NB. shift (like rotate but edges are filled with n)
 , y                      NB. assemble all elements into a flat list
-x , y                    NB. join x and y lists
+x , y                    NB. join x and y lists [concatenate]
 ,. y                     NB. for each item assemble into flat list
 x ,. y                   NB. for each item x1,y1
 ,: y                     NB. make into a 1-item array by adding a prefix dimension of 1
 x ,: y                   NB. (x,y) with two items x and y
 x { y                    NB. select x index from y (x has its own world of syntax)
-x {. y                   NB. take x first items (accept negative for last)
+x {. y                   NB. take x first items [x last items when negative]
 {. y                     =   1 {. y
-x }. y                   NB. drop x first items (accept negative for last)
+x }. y                   NB. drop x first items [x last items when negative]
 }. y                     =   1 }. y
 {: y                     NB. last item
 }: y                     NB. all but last item
@@ -139,7 +139,7 @@ x } y                    NB. combine items of y according to the items x
 x (n }) y                NB. amend (adverb) y with x at n (n has same index as select)
 x (U`V`W) } y            =   (x U y) (x V y) } (x W y)
 i.y                      NB. 0 1 2 ... (y-1)
-x i. y                   NB. find first index of item x in list y
+x i. y                   NB. find first index of item y in list x
 /: y                     NB. indices permutation that sorts y ascending [sorted(y) == (/: y) { y]
 \: y                     NB. indices permutation that sorts y descending
 x /: y                   =   (/: y) { x  NB. sort x by y ascending. [/:~y for basic sort, x can be a table for multiple sort keys]
@@ -149,30 +149,29 @@ x C. y                   NB. apply permutation x on y [x may be either a direct 
 NB.                          x may be abbreviated direct, in which case it means move selection to tail of y.
 NB.                          x may be abbreviated cycle [box], in which case, the specified cycle is applied
 (/: x) C. (x C. y)       =   y
-A. y                     NB. anagram(permutation) index from anagram given perumatation y
+A. y                     NB. anagram(permutation) index from anagram given permutation y
 x A. y                   NB. anagram index x of list y
-|: y                     NB. tranpose (reverse the order of the axes of a n-dimensional array)
-x |: y                   NB. permute axes of y according to x [if x is a box, do diagonal]
-u ;. 0 y                 NB. apply u on y in reverse along all axes
-x u ;. 0 y               NB. apply u on y subarray according to spec x [x == (index ,: result-shape)] 
-NB.                          negative value in shape -> do in reverse on axes
-u ;. n y                 NB. apply u on frets (parts) of y split by n specification:
-NB.                          n =  1 first item determines fret marker, fret marker is included in frets
-NB.                          n = _1 first item determines fret marker, fret marker is exclucded in frets
-NB.                          n =  2 last item determines fret marker, fret marker is included in frets
-NB.                          n = _2 last item determines fret marker, fret marker is excluded in frets
+|: y                     NB. tranpose (reverse the order of the axes of an n-dimensional [rank-n] array)
+x |: y                   NB. restructure y with axes listed in x as last [axes boxed together extract their common diagonal]
+u ;. 0 y                 NB. apply u on whole of y after reversal along each axis
+x u ;. 0 y               NB. apply u on y subarray according to spec x [x == (starting indices ,: ranges)]
+NB.                          negating a range specifies reversal after positive selection along that axis
+u ;. n y                 NB. apply u on sections of y split as specified by n:
+NB.                          first item is boundary marker (fret) for abs(n) == 1
+NB.                          last item is boundary marker (fret) for abs(n) == 2
+NB.                          frets are retained in sections for n > 0, excluded for n < 0
 x u ;. n y               NB. like the monad above but with x as a bitstring of which chars in y to consider fret markers
-x u :. 3 y               NB. apply u on y tiles according to spec x [x == (offset ,; result-shape)]
-NB.                          _3 to exclude incomplete parts(shards)
-;: y                     NB. split string y into boxes top level J expression parts (tokens)
+x u :. 3 y               NB. apply u on y tiles according to spec x [x == (starting-indices ,; ranges)]
+NB.                          n == 3 includes incomplete parts (shards); n == _3 excludes them
+;: y                     NB. split (parse) string y into boxed top-level J expression parts (tokens)
 
 NB. ---------------------------------------------------------
 NB. Sparse Arrays
 NB. ---------------------------------------------------------
-$. y                     NB. convert dense (regular) array y to spare array
+$. y                     NB. convert dense (regular) array y to sparse array
 3 $. y                   NB. get sparse element of sparse array y
 0 $. y                   NB. convert sparse array to dense (regular) array (and dense to sparse)
-1 $. s;a;z               NB. create a spare array [s=shape,a=axes,z=spare value]
+1 $. s;a;z               NB. create a sparse array [s=shape,a=axes,z=sparse value]
 4 $. y                   NB. get index-matrix of sparse array y
 5 $. y                   NB. get values of sparse array [index matches result of 4&$.]
 
@@ -181,15 +180,15 @@ NB. Sets
 NB. ---------------------------------------------------------
 x e. y                   NB. true if x is a member of list y
 x -. y                   NB. remove items from x that are in y, preserve order
-~. y                     NB. remove duplicates
-~: y                     NB. non duplicate sieve [bitstring, duplicate values are false]
+~. y                     NB. remove duplicates (nub)
+~: y                     NB. non duplicate sieve [bitstring, subsequent duplicate values yield false]
 NB.                          (~: y) # y = ~. y
 = y                      =   (~. y) =/ y
 
 NB. ---------------------------------------------------------
 NB. Trees
 NB. ---------------------------------------------------------
-{:: y                    NB. get paths to leafs of tree y
+{:: y                    NB. get paths to leaves of tree y
 x {:: y                  NB. fetch value from tree y [e.g. x=(2;1;1)
 L. y                     NB. max length of any path to a leaf
 f L: n y                 NB. apply f on every n-th level of fixed level tree y [negative n for count from root]
@@ -202,7 +201,7 @@ NB. ---------------------------------------------------------
 < y                      NB. box
 > y                      NB. unbox
 ; y                      NB. unbox all elements into flat list
-x ; y                    NB. link to list boxes of x and then y
+x ; y                    NB. list of x and then y [after adding a level of boxing to x, but not to y if already boxed]
 
 NB. ---------------------------------------------------------
 NB. Functions
@@ -211,51 +210,51 @@ NB. ---------------------------------------------------------
 ] y                      NB. identity y
 x [ y                    NB. select x
 x ] y                    NB. select y
-n:                       NB. constant function of value n [_9,9, e.g. 2:]
+n:                       NB. constant function with value of decimal digit n [_9,9, e.g. 2:]
 y b.                     NB. y in [0-15]: return f such that f's truth table is y as a bitstring
 NB.                          y in [16-31]: same as above but for integers bitwise instead of booleans
 NB.                          y in [32-34]: more bitwise - see docs
-f b. 0                   NB. G, L, R [rangks of monadic f, left dyad f, right dyad f]
+f b. 0                   NB. ranks G, L, R of monadic f, left dyad f, right dyad f
 f / y                    NB. i(1) f i(2) ... f i(n) [y=i(1) i(2) ... i(n)]
 f`g`h / y                NB. i(1) f i(2) g i(3) h i(4) f ... [y=i(1) i(2) ...]
-x f / y                  NB. create a table of (x(i) f y(j)) for each x(i) in x and y(j) in y 
+x f / y                  NB. a table of (x(i) f y(j)) for each x(i) in x and y(j) in y
 NB.                          x rank should match left rank of f, y rank should match right rank of f
 x f /. y                 =   (= x) (u @ #) y
-x f~ y                   =   y f x
-f~ y                     =   y f y
+x f~ y                   =   y f x  NB. argument transposition
+f~ y                     =   y f y  NB. reflexive application
 g f.                     NB. "fix" or "freeze" the function g [by eager evaluation]
 f \ y                    NB. apply f to each prefix of items in y [(f y(1)) (f (y(1) y(2)) ...]
 n f \ y                  NB. apply f to successive infixes of y of length n [negative n for no overlap]
 f \. y                   NB. apply f to each suffix of items in y [from long to short]
-n f \. y                 NB. apply f to successive "views" of y where infix of length n is remove [negative n for no overlap]
+n f \. y                 NB. apply f to successive outfix "view" of y where an infix of length n is removed [negative n for no overlap]
 g ^: _1                  NB. inverse of g
-f !. n                   NB. modify f's behviour for certain specific functions
+f !. n                   NB. modify (fit or customize) f's behviour for certain specific functions
 (f &. g) y               =   (g ^: _1) f g y
-each                     =   &.>
+u each y                 =   &.>  NB. apply u inside each top-level box in y, and rebox
 (f & k) y                =   y f k
 (k & f) y                =   k f y
-every                    =   &>
+u every y                =   &>  NB. apply u inside each top-level box of y, and unbox
 (f @: g) y               =   f (g y)
 x (f @: g) y             =   f (x g y)
-(f &: g) y               =   f (g y) 
+(f &: g) y               =   f (g y)
 x (f &: g) y             =   (g x) f (g y)
 (f @ g) y                =   (f @: g) " G  y NB. [G is the intrinsic rank of monadic g]
 x (f @ g) y              =   x (f @: g) " LR y NB. [L,R are the left right intrisic ranks of g]
 (f & g) y                =   (f @: g) " G y
 x (f & g) y              =   (g x) (f " (G,G)) (g y)
-(f g) y                  =   y f (g y)
-x (f g) y                =   x f (g y)
-(f g h) y                =   (f y) g (h y)
-x (f g h) y              =   (x f y) g (x h y)
+(f g) y                  =   y f (g y)  NB. hook
+x (f g) y                =   x f (g y)  NB. hook
+(f g h) y                =   (f y) g (h y)  NB. fork
+x (f g h) y              =   (x f y) g (x h y)  NB. fork
 e f g h                  =   e (f g h)
 d e f g h                =   d e (f g h)
-NB.                          even: (a b c ...) =  hook (a (b c ...))
-NB.                          odd : (a b c ...) = fork (a b (c ...))
+NB.                          even count (a b c ...) =  hook: (a (b c ...))
+NB.                          odd count (a b c ...) = fork: (a b (c ...))
 n u v                    =   (n " _) u v NB. [noun-verb-verb]
 (u " k y)                NB. the monadic verb u is applied separately to each k-cell of y
 x (u " (L,R)) y          NB. apply dyad u separately to each pair consisting of an L-cell from x and the corresponding R-cell from y
 u " _n y                 NB. u is to be applied to cells of rank n less than the rank of y
-k " R                    =   (3 : 'k') " R NB. [constant value k], [R=_ for always k regardless if input rank]
+k " R                    =   (3 : 'k') " R  NB. [constant value k], [R=_ for always k, regardless of input rank]
 (x u y)                  NB. for arguments x and y, if u is a dyad with ranks L and R,
 NB.                          and the L-frame of x is f,g and the R-frame of y is f (supposing y to have the shorter frame)
 NB.                          then (x u y) is computed as (x u (g& $)"R y)
@@ -267,19 +266,21 @@ u0`u1`...`un @. t y      NB. u(t(y))(y)
 u`v`w @. y               =   (y { u`v`w) `: 6
 u`v`w`:0 y               =   (u y) , (v y) , (w y)
 $:                       NB. self reference to function within function (recursion)
-(f ^: n) y               NB. f(1) f(2) ... f(n) y
-(f ^: _) y               NB. f f ... f y [until fixed point, f(n-1) == f(n)]
+(f ^: n) y               NB. f f ... f [n applications] y
+(f ^: _) y               NB. f f ... f y [multiple applications until fixed point, f(n-1) == f(n)]
 (f ^: g) y               =   f ^: (g y) y
 (f ^: g ^: _) y          NB. g is boolean [while g(y); y = f(y)] then return result y
 (u ^: (v1`v2)) y         =   u ^: (v1 y) (v2 y) NB. "for loop" [v1(y) = #iterations, v2(y) = starting value]
 x (u ^: n) y             =   ((x & u) ^: n) y
 x (u ^: (U`V`W)) y       =   (((x U y) & u) ^: (x V y)) (x W y)
+                         NB. BODY Operator definition:
+NB.                          a quoted string, or 0 to be followed by successive lines ending with separate ")"
 1 : BODY                 NB. adverb [u is the supplied verb]
 2 : BODY                 NB. conjunction [u as left verb, v as right verb]
 3 : BODY                 NB. monad [y as right arg] or ambivalent with : line in middle of BODY, monadic then dyadic
 4 : BODY                 NB. dyad [x as left arg, y as right arg]
 13 : BODY                NB. tacit verb [no free variables x or y] from explicit definition [BODY restricted to single line]
-NB.                          A name with no assigned value in BODY is assumed to denote a verb.
+NB.                          A name in BODY with no assigned value is assumed to denote a verb.
 noun                     =   0
 adverb                   =   1
 conjunction              =   2
@@ -297,21 +298,22 @@ verb define LF BODY LF ) NB. 3 : 0 : 0 multiline definition
 x (C u)                  =   x C u  NB. C is a conjunction, result is an adverb
 x (u C)                  =   u C x  NB. C is a conjunction, result is an adverb
 x (A1 A2)                =   (x A1) A2  NB. A1 and A2 are adverbs, result is an adverb
-                         NB. conjuntion - long left scope short right scope, 
-NB.                          adverb -     long left scope
-NB.                          verb -       long right scope
+                         NB. conjunction - long left scope short right scope,
+NB.                          adverb -      long left scope
+NB.                          verb -        long right scope
 
 NB. ---------------------------------------------------------
 NB. Misc
 NB. ---------------------------------------------------------
 _                        NB. infinity [float]
 i. 0 0                   NB. null [by convention]
-type 'name'              NB. get part of speech type of variable named 'name'
-datatype y               NB. get data type of variable named 'name'
-s: y                     NB. convert a boxed string y into a symbol
+type 'N'                 NB. part of speech (a boxed word) of object named in quotes
+datatype y               NB. data type (a boxed phrase) of y
+s: y                     NB. convert boxed string(s) y into a symbol(s),
+NB.                          or report their position(s) in the Global Symbol Table
 ". y                     NB. execute y as a J expression
-7!:5 <'name'             NB. sizeof variable named 'name'
-x I. y                   NB. index of y in intervals defined by x spec
+7!:5 <'N'                NB. storage used by variable named N (sizeof)
+x I. y                   NB. index of y in intervals ending with (ascending) values in x
 
 NB. ---------------------------------------------------------
 NB. Representation
@@ -322,8 +324,8 @@ x 8 !: y                 NB. extended formatting of y determined by spec x
 9!:6''                   NB. inspect global box drawing chars
 9!:7 y                   NB. set global box drawing chars [#y = 11]
 9!:3 y                   NB. set function global representation [2=box,5=lin,6=parens,4=tree,atom=1]
-5!:n < y                 NB. get function representation for noun y as new noun [n same as y value for 9!:3]
-y 5!:0                   NB. inverse of atomic representation (restore original value)
+5!:n <'y'                NB. get function representation for noun y as new noun [n same as y value for 9!:3]
+y 5!:0                   NB. inverse of atomic representation [y == 1 for 9!:3, restore original value]
 
 NB. ---------------------------------------------------------
 NB. Locales
@@ -331,35 +333,35 @@ NB. ---------------------------------------------------------
 N_L_ =: value            NB. define N in locale L
 N__y =: value            NB. define N in locale referenced by variable y [y is box containing the locale's name]
 N =: value               NB. define N in current locale
-(0 !: 0) < 'f.ijs'       NB. load f.ijs into current locale
+(0 !: 0) < 'f.ijs'       NB. load script f.ijs into current locale
 names ''                 NB. show all names in current locale
-names_name_ ''           NB. show all names in 'name' locale
+names_L_ ''              NB. show all names in locale L
 nl ''                    NB. show all names in current locale as boxed list
 y nl ''                  NB. show all names in current locale with prefix y as boxed list
-erase < 'name'           NB. remove 'name' definition from first locale containing it in path
+erase < 'L'              NB. remove L definition from first locale containing it in path
 coname ''                NB. show name of current locale
-cocurrent                NB. set current locale to 'name'
+cocurrent 'L'            NB. set current locale to L
 conl 0                   NB. list all locale names
 conl 1                   NB. list ids of object locales
-copath 'name'            NB. show locale path of locale 'name' ['name' can also be boxed]
-y copath 'name'          NB. set locale path for locale 'name' [y is a boxed list of names, don't forget to put z last]
-coerase 'name'           NB. destroy locale 'name'
+copath 'L'               NB. show locale path of locale L [L can also be boxed]
+y copath 'L'             NB. set locale path for locale L [y is a list of boxed names, don't forget to put z last]
+coerase 'L'              NB. destroy locale L
 
 NB. ---------------------------------------------------------
 NB. OOP
 NB. ---------------------------------------------------------
-coclass 'name'           NB. introduce a new class 'name'
-coinsert 'name'          NB. this class to be a child of 'name'
-conew 'name'             NB. new object of class 'name'
-codestroy_name_ ''       NB. destroy locale 'name'  [normally referenced from a method named 'destroy; in class definitions]
+coclass 'L'           NB. introduce a new class L
+coinsert 'L'          NB. this class to be a child of L
+conew 'L'             NB. new object of class L
+codestroy_L_ ''       NB. destroy locale L [normally referenced from a method named 'destroy'; in class definitions]
 
 NB. Steps to create and use a class
 NB. ===============================
-coclass 'ClsName'        NB. create class and switch to 'ClsName' locale
-create =: verb def ''    NB. this is the constructor. any monad verb will do
+coclass 'ClsName'        NB. create class and switch to locale 'ClsName'
+create =: verb def ''    NB. this is the constructor. any monadic verb will do
 some_method =: +         NB. add some methods
 destroy =: codestroy     NB. create destructor
-cocurrent 'base'         NB. switch back to 'base' locale (or any other)
+cocurrent 'L'            NB. switch back to locale L (or any other)
 obj =: x conew 'ClsName' NB. creates a new object based on 'ClsName' and calls create__obj x [obj = boxed id reference]
 x some_method__obj y     NB. call (x some_method y) on obj
 destroy__obj ''          NB. done with this. garbage cleanup
@@ -367,7 +369,7 @@ destroy__obj ''          NB. done with this. garbage cleanup
 NB. Steps to inherit from a class
 NB. =============================
 NB. note: call parent methods with f. adverb when overriding to remain in current locale when applying method
-coclass 'ClsName2'       NB. create class and switch to 'ClsName2' locale
+coclass 'ClsName2'       NB. create class and switch to locale 'ClsName2'
 coinsert 'ClsName'       NB. add 'ClsName' to 'ClsName2''s paths (if not there already)
 NB. ... (see above)
 
@@ -375,23 +377,23 @@ NB. ---------------------------------------------------------
 NB. Scripts
 NB. ---------------------------------------------------------
 NB. notes:
-NB. - scripts loaded with 'load' can have private (=.) assignments 
+NB. - scripts loaded with 'load' can have private (=.) assignments
 NB.   that are local to the script
-NB. - verbs using other verbs that are local to the script should 
+NB. - verbs using other verbs that are local to the script should
 NB.   fix calls (f.)
 jpath '~user'            NB. user dir
-load 'f.ijs'             NB. load 'f.ijs', stop on error, no display
-loadd 'f.ijs'            NB. load 'f.ijs', stop on error, display
-require 'f.ijs'          NB. load 'f.ijs' only if not loaded already
-0!:0 < 'f.ijs'           NB. low level load 'f.ijs', stop on error, no display
-0!:1 < 'f.ijs'           NB. low level load 'f.ijs', stop on error, display
-0!:10 < 'f.ijs'          NB. low level load 'f.ijs', continue on error, no display
-0!:11 < 'f.ijs'          NB. low level load 'f.ijs', continue on error, display
+load 'f1.ijs'            NB. load 'f1.ijs', stop on error, no display
+loadd 'f1.ijs'           NB. load 'f1.ijs', stop on error, display
+require 'f1.ijs'         NB. load 'f1.ijs' only if not loaded already
+0!:0 < 'f1.ijs'          NB. low-level load 'f1.ijs', stop on error, no display
+0!:1 < 'f1.ijs'          NB. low-level load 'f1.ijs', stop on error, display
+0!:10 < 'f1.ijs'         NB. low-level load 'f1.ijs', continue on error, no display
+0!:11 < 'f1.ijs'         NB. low-level load 'f1.ijs', continue on error, display
 4!:3''                   NB. all loaded scripts in current session [boxed list]
-4!:4 < 'name'            NB. index of (4!:3) that loaded 'name'
+4!:4 < 'N'               NB. index in (4!:3) of script that loaded N
 
 NB. ---------------------------------------------------------
-NB. Binary Data
+NB. Binary Data (Serialization)
 NB. ---------------------------------------------------------
 3!:1 y                   NB. noun y to J specific binary reperesentation
 3!:2 y                   NB. J specific binary reperesentation y to noun
@@ -420,18 +422,18 @@ u: y                     NB. string y to unicode
 NB. ---------------------------------------------------------
 NB. Files
 NB. ---------------------------------------------------------
-s fwrite 'path'          NB. write string s to 'path'
-fread 'path'             NB. read 'path' as string
-s fappend 'path'         NB. append string into f
-fread 'path';B;L         NB. read 'path' starting at B, size L
-s fwrites 'path'         NB. write text s to 'path' (platform dependent line end)
-freads 'path'            NB. read text from 'path' (platform dependent line end)
-fexist 'path'            NB. true if 'path' exists
-ferase 'path'            NB. delete file at 'path'
-x 1!:2 <'file.path'      NB. low level write x into 'file.path'
-1!:1 <'file.path'        NB. low level read 'file.path' as string
+s fwrite 'P'             NB. write string s to path P
+fread 'P'                NB. read path P as string
+s fappend 'P'            NB. append string into file at path P
+fread 'P';B;L            NB. read path P starting at B, size L
+s fwrites 'P'            NB. write text s to path P (platform-dependent line end)
+freads 'P'               NB. read text from path P (platform-dependent line end)
+fexist 'P'               NB. true if path P exists
+ferase 'P'               NB. delete file at pat P
+x 1!:2 <'P'              NB. low-level write x into path P
+1!:1 <'P'                NB. low-level read path P as string
 smoutput y               NB. write to stdout
-x (1!:2) 2               NB. write to stdout [low level]
+x (1!:2) 2               NB. write to stdout [low-level]
 (1!:1) 1                 NB. read from stdin
 
 NB. ---------------------------------------------------------
@@ -455,23 +457,23 @@ NB. ---------------------------------------------------------
 NB. Performance
 NB. ---------------------------------------------------------
 6!:2 y                   NB. measure time in seconds to execute y [y is a J expression as string]
-x 6!:2 y                 NB. " averagd over x repetitions
+x 6!:2 y                 NB. " averaged over x repetitions
 load 'jpm'               NB. load profiler
 start_jpm_''             NB. start profiler
-showdetail_jpm_ 'name'   NB. show profiling for function named 'name'
+showdetail_jpm_ 'F'      NB. show profiling for function named F
 
 NB. ---------------------------------------------------------
 NB. Control
 NB. ---------------------------------------------------------
 NB. notes:
-NB. - control structure as last item of an explicit definition will return the
+NB. - control structure as last executed item of an explicit definition will return the
 NB.   structure's value
 
 NB. conditional
 NB. ===========
-NB. T(N) evalutes to true if the first element is not 0
+NB. T evalutes to true if its first raveled item is not unboxed 0
 if. T do. B1 else. B2 end.
-if. T1 do. B1 elseif. T2 do. B2 elseif. 1 do. B3 end. 
+if. T1 do. B1 elseif. T2 do. B2 elseif. 1 do. B3 end.
 if. T do. B end.
 
 NB. select
@@ -487,12 +489,12 @@ whilst. T do. B end.     =   (B; while. T do. B end.)
 NB. for
 NB. ===
 for. A do. B end.        NB. execute B #A times
-for_elem. A do. B end.   NB. `elem` in scope of B for each element of A, 
+for_elem. A do. B end.   NB. `elem` in scope of B for each element of A,
 NB.                          `elem_index` to get the current index
 
 NB. return
 NB. ======
-NB. The effect of the return. control word is to short-circuit any further execution of the verb, 
+NB. The effect of the return. control word is to short-circuit any further execution of the verb,
 NB. delivering the most-recently computed value
 NB. e.g.
 verb define
@@ -516,38 +518,38 @@ NB. 7 bident       EDGE CAVN1 CAVN2 ...       => EDGE Z ...        Z = CAVN1 CAV
 NB. 8 assign       NN Asgn CAVN ...           => Z ...             Z = CAVN
 NB. 9 paren        ( CAVN ) ...               => Z ...             Z = CAVN
 NB.
-NB. Index
-NB. =====
+NB. Glossary
+NB. ========
 NB. Mark --> Marks the beggining of the expression
 NB. Asgn --> =: / =.
 NB. EDGE --> Mark / Asgn / (
 NB. NN   --> Name / Noun
 NB. VN   --> Verb / Noun
 NB. EAVN --> Edge / Adverb / Verb / Noun
-NB. CAVN --> Conjection / Adverb / Verb / Noun
+NB. CAVN --> Conjunction / Adverb / Verb / Noun
 NB.
 NB. Bidents
 NB. =======
 NB. verb         verb          -->  verb (hook)
-NB. adeverb      adverb        -->  adverb
-NB. conjunction  verb          -->  adevrb
-NB. conjunction  noun          -->  adevrb
-NB. verb         conjunction   -->  adevrb
-NB. noun         conjunction   -->  adevrb
+NB. adverb       adverb        -->  adverb
+NB. conjunction  verb          -->  adverb
+NB. conjunction  noun          -->  adverb
+NB. verb         conjunction   -->  adverb
+NB. noun         conjunction   -->  adverb
 NB.
 NB. Notes
 NB. =====
-NB. Names that are nouns are evaluated immediately
-NB. Otherwise, it is assume to be a verb
+NB. Names that have already been assigned a value when encountered are evaluated immediately;
+NB. otherwise, it is assumed that they will become verbs
 NB.
 NB. Effects
 NB. =======
 NB. * verbs have long right scope
 NB. * verbs have short left scope
 NB. * adverbs are applied before verbs
-NB. * conjections are applied before verbs
+NB. * conjunctions are applied before verbs
 NB. * adverbs have long left scope
 NB. * adverbs have short right scope
-NB. * conjections have long left scope
-NB. * connections have short right scope
-NB. * trains on the left can break long left scope of adverbs/conjections
+NB. * conjunctions have long left scope
+NB. * conjunctions have short right scope
+NB. * trains on the left can break long left scope of adverbs/conjunctions
