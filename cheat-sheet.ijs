@@ -16,7 +16,7 @@ x +. y                   NB. x or y
 -. y                     NB. not y
 x *: y                   NB. not (x and y)
 x +: y                   NB. not (x or y)
-x -: y                   NB. x matches y (same shape and values: indentical, atomic result)
+x -: y                   NB. x matches y (same shape and values: identical, atomic result)
 x = y                    NB. x equals y (same shape collection of item comparisons)
 x >: y                   NB. x >= y
 x <: y                   NB. x <= y
@@ -129,9 +129,9 @@ x ,. y                   NB. for each item x1,y1
 ,: y                     NB. make into a 1-item array by adding a prefix dimension of 1
 x ,: y                   NB. (x,y) with two items x and y
 x { y                    NB. select x index from y (x has its own world of syntax)
-x {. y                   NB. take x first items [x last items when negative]
+x {. y                   NB. take x first items [abs(x) last items when negative]
 {. y                     =   1 {. y
-x }. y                   NB. drop x first items [x last items when negative]
+x }. y                   NB. drop x first items [abs(x) last items when negative]
 }. y                     =   1 }. y
 {: y                     NB. last item
 }: y                     NB. all but last item
@@ -226,7 +226,7 @@ g f.                     NB. "fix" or "freeze" the function g [by eager evaluati
 f \ y                    NB. apply f to each prefix of items in y [(f y(1)) (f (y(1) y(2)) ...]
 n f \ y                  NB. apply f to successive infixes of y of length n [negative n for no overlap]
 f \. y                   NB. apply f to each suffix of items in y [from long to short]
-n f \. y                 NB. apply f to successive outfix "view" of y where an infix of length n is removed [negative n for no overlap]
+n f \. y                 NB. apply f to successive outfix "views" of y where an infix of length n is removed [negative n for no overlap]
 g ^: _1                  NB. inverse of g
 f !. n                   NB. modify (fit or customize) f's behviour for certain specific functions
 (f &. g) y               =   (g ^: _1) f g y
@@ -348,7 +348,7 @@ y copath 'L'             NB. set locale path for locale L [y is a list of boxed 
 coerase 'L'              NB. destroy locale L
 
 NB. ---------------------------------------------------------
-NB. OOP
+NB. Object Oriented Programming
 NB. ---------------------------------------------------------
 coclass 'L'           NB. introduce a new class L
 coinsert 'L'          NB. this class to be a child of L
@@ -370,7 +370,7 @@ NB. Steps to inherit from a class
 NB. =============================
 NB. note: call parent methods with f. adverb when overriding to remain in current locale when applying method
 coclass 'ClsName2'       NB. create class and switch to locale 'ClsName2'
-coinsert 'ClsName'       NB. add 'ClsName' to 'ClsName2''s paths (if not there already)
+coinsert 'ClsName'       NB. add 'ClsName' to 'ClsName2''s path (if not there already)
 NB. ... (see above)
 
 NB. ---------------------------------------------------------
@@ -395,8 +395,8 @@ require 'f1.ijs'         NB. load 'f1.ijs' only if not loaded already
 NB. ---------------------------------------------------------
 NB. Binary Data (Serialization)
 NB. ---------------------------------------------------------
-3!:1 y                   NB. noun y to J specific binary reperesentation
-3!:2 y                   NB. J specific binary reperesentation y to noun
+3!:1 y                   NB. noun y to J specific binary representation
+3!:2 y                   NB. J specific binary representation y to noun
 2&(3!:5) y               NB. float y to 8 chars [y can be a list]
 _2&(3!:5) y              NB. 8 chars y to float
 1&(3!:5) y               NB. float y to 4 chars
@@ -429,7 +429,7 @@ fread 'P';B;L            NB. read path P starting at B, size L
 s fwrites 'P'            NB. write text s to path P (platform-dependent line end)
 freads 'P'               NB. read text from path P (platform-dependent line end)
 fexist 'P'               NB. true if path P exists
-ferase 'P'               NB. delete file at pat P
+ferase 'P'               NB. delete file at path P
 x 1!:2 <'P'              NB. low-level write x into path P
 1!:1 <'P'                NB. low-level read path P as string
 smoutput y               NB. write to stdout
